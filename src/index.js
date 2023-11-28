@@ -1,0 +1,125 @@
+import './style.css';
+import { format } from 'date-fns'
+
+let measurement = "°C";
+let current = {};
+let forecast = [];
+
+async function getWeather(location){
+    try {
+        const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=6c6dcb07e838483dad800431232211&q=${location}&days=3&aqi=no&alerts=no`, {mode: 'cors'})
+        const data = await response.json();
+        sortData(data);
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+document.addEventListener("DOMContentLoaded", getWeather("vancouver"))
+
+const form = document.querySelector("form");
+form.addEventListener("submit", (event) => {
+    getWeather(search.value);
+    event.preventDefault();
+
+})
+const toggleTemp = document.getElementById("toggleTemp")
+toggleTemp.innerHTML = measurement;
+toggleTemp.addEventListener('click', toggle)
+
+function toggle(){
+    measurement = measurement === "°C" ? "°F" : "°C";
+    toggleTemp.innerHTML = measurement
+    renderWeather();
+    renderForecast();
+}
+
+function sortData(data){
+    current = {
+        location: data.location.name,
+        condition: data.current.condition.text,
+        weather: {
+            temp: data.current.temp_c,
+            "feels like": data.current.feelslike_c,
+            wind: data.current.wind_mph,
+            humidity: data.current.humidity
+        }
+    
+    };
+
+    forecast = [
+        {
+            //use date-fn to format date to display as day of the week e.g. Monday
+            date: format(new Date(data.forecast.forecastday[0].date), "eeee"),
+            avgTemp: data.forecast.forecastday[0].day.avgtemp_c,
+            condition: data.forecast.forecastday[0].day.condition.text
+
+        },
+        {
+            date: format(new Date(data.forecast.forecastday[1].date), "eeee"),
+            avgTemp: data.forecast.forecastday[1].day.avgtemp_c,
+            condition: data.forecast.forecastday[1].day.condition.text
+        },
+        {
+            date: format(new Date(data.forecast.forecastday[2].date), "eeee"),
+            avgTemp: data.forecast.forecastday[2].day.avgtemp_c,
+            condition: data.forecast.forecastday[2].day.condition.text
+        },
+
+    ]
+    renderWeather()
+    renderForecast()
+}
+
+function renderWeather(){
+    let weatherObj = current;
+    const condition = document.getElementById("condition")
+    condition.innerHTML = weatherObj.condition
+
+    const location = document.getElementById("location")
+    location.innerHTML = weatherObj.location
+
+    const weatherList = document.getElementById("weather")
+    weatherList.innerHTML = "";
+
+
+    const obj = weatherObj.weather
+    for (const [key, value] of Object.entries(obj)){
+        if (key == "temp" || key == "feels like"){
+            let num = value;
+            if (measurement == "F"){
+                num = convertCF(value)
+            }
+            const markup = `<li>${key}: ${num}${measurement}</li>`;
+            weatherList.insertAdjacentHTML('beforeend', markup);
+
+        } else {
+            const markup = `<li>${key}: ${value}</li>`;
+            weatherList.insertAdjacentHTML('beforeend', markup);
+
+
+        }
+    }
+}
+
+function renderForecast(){
+    let forecastArray = forecast;
+    const forecastList = document.getElementById("forecast")
+    forecastList.innerHTML = "";
+    forecastArray.forEach(render)
+    
+    function render(item){
+        let num = item.avgTemp;
+        if (measurement == "F"){
+            num = convertCF(item.avgTemp)
+        }
+        const markup = `<li><p>${item.date}</p><p>${num}${measurement}</p><p>${item.condition}</p></li>`
+        forecastList.insertAdjacentHTML('beforeend', markup);
+
+    }
+}
+
+function convertCF(num){
+    let sum = (num * 9/5) + 32;
+    return Math.round(sum * 10) / 10;
+}
