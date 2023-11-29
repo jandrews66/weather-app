@@ -21,6 +21,7 @@ const form = document.querySelector("form");
 form.addEventListener("submit", (event) => {
     getWeather(search.value);
     event.preventDefault();
+    form.reset();
 
 })
 const toggleTemp = document.getElementById("toggleTemp")
@@ -38,11 +39,12 @@ function sortData(data){
     current = {
         location: data.location.name,
         condition: data.current.condition.text,
+        icon_code: data.current.condition.icon,
         weather: {
             temp: data.current.temp_c,
             "feels like": data.current.feelslike_c,
-            wind: data.current.wind_mph,
-            humidity: data.current.humidity
+            wind: data.current.wind_mph + "mph",
+            humidity: data.current.humidity + "%"
         }
     
     };
@@ -52,18 +54,24 @@ function sortData(data){
             //use date-fn to format date to display as day of the week e.g. Monday
             date: format(new Date(data.forecast.forecastday[0].date), "eeee"),
             avgTemp: data.forecast.forecastday[0].day.avgtemp_c,
-            condition: data.forecast.forecastday[0].day.condition.text
+            condition: data.forecast.forecastday[0].day.condition.text,
+            icon_code: data.forecast.forecastday[0].day.condition.icon
 
         },
         {
             date: format(new Date(data.forecast.forecastday[1].date), "eeee"),
             avgTemp: data.forecast.forecastday[1].day.avgtemp_c,
-            condition: data.forecast.forecastday[1].day.condition.text
+            condition: data.forecast.forecastday[1].day.condition.text,
+            icon_code: data.forecast.forecastday[1].day.condition.icon
+
+            
         },
         {
             date: format(new Date(data.forecast.forecastday[2].date), "eeee"),
             avgTemp: data.forecast.forecastday[2].day.avgtemp_c,
-            condition: data.forecast.forecastday[2].day.condition.text
+            condition: data.forecast.forecastday[2].day.condition.text,
+            icon_code: data.forecast.forecastday[2].day.condition.icon
+
         },
 
     ]
@@ -71,23 +79,31 @@ function sortData(data){
     renderForecast()
 }
 
+function editIconUrl(url){
+return url.replace("//cdn.weatherapi.com/weather/64x64/", "../src/icon/")
+
+}
 function renderWeather(){
-    let weatherObj = current;
+    let currentObj = current;
     const condition = document.getElementById("condition")
-    condition.innerHTML = weatherObj.condition
+    condition.innerHTML = currentObj.condition
 
     const location = document.getElementById("location")
-    location.innerHTML = weatherObj.location
+    location.innerHTML = currentObj.location
 
     const weatherList = document.getElementById("weather")
     weatherList.innerHTML = "";
 
+    const iconContainer = document.getElementById("conditionIcon")
+    iconContainer.innerHTML = "";
+    const iconMarkup = `<img src=${editIconUrl(currentObj.icon_code)}>`
+    iconContainer.insertAdjacentHTML('beforeend', iconMarkup)
 
-    const obj = weatherObj.weather
-    for (const [key, value] of Object.entries(obj)){
+    const weatherObj = currentObj.weather
+    for (const [key, value] of Object.entries(weatherObj)){
         if (key == "temp" || key == "feels like"){
             let num = value;
-            if (measurement == "F"){
+            if (measurement == "°F"){
                 num = convertCF(value)
             }
             const markup = `<li>${key}: ${num}${measurement}</li>`;
@@ -110,10 +126,10 @@ function renderForecast(){
     
     function render(item){
         let num = item.avgTemp;
-        if (measurement == "F"){
+        if (measurement == "°F"){
             num = convertCF(item.avgTemp)
         }
-        const markup = `<li><p>${item.date}</p><p>${num}${measurement}</p><p>${item.condition}</p></li>`
+        const markup = `<li><p>${item.date}</p><img src="${editIconUrl(item.icon_code)}"><p>${num}${measurement}</p><p>${item.condition}</p></li>`
         forecastList.insertAdjacentHTML('beforeend', markup);
 
     }

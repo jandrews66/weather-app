@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <script src="main.js" defer></script>
+    <script src="https://kit.fontawesome.com/f5c697f74f.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
     <button id="toggleTemp"></button>
     <div class="container">
-        <div id="condition"></div>
+        <div id="conditionIcon"></div>
         <div id="location"></div>
+        <div id="condition"></div>
+        <ul id="weather"></ul>
         <form>
             <p>
               <label for="search">
@@ -19,7 +23,6 @@
             </p>
             <button>Search</button>
         </form>
-        <ul id="weather"></ul>
         <ul id="forecast"></ul>
     </div>
 
