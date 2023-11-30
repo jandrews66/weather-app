@@ -4,6 +4,8 @@ import { format } from 'date-fns'
 let measurement = "°C";
 let current = {};
 let forecast = [];
+const errorMsg = document.getElementById("errorMsg");
+document.addEventListener("DOMContentLoaded", getWeather("vancouver"))
 
 async function getWeather(location){
     try {
@@ -12,28 +14,19 @@ async function getWeather(location){
         sortData(data);
     } catch(error) {
         console.log(error)
+        errorMsg.classList.add("error")
+        errorMsg.textContent = "Location not found, please try again."
     }
 }
-
-document.addEventListener("DOMContentLoaded", getWeather("vancouver"))
 
 const form = document.querySelector("form");
 form.addEventListener("submit", (event) => {
     getWeather(search.value);
     event.preventDefault();
     form.reset();
-
+    errorMsg.textContent = "";
+    errorMsg.className = "";
 })
-const toggleTemp = document.getElementById("toggleTemp")
-toggleTemp.innerHTML = measurement;
-toggleTemp.addEventListener('click', toggle)
-
-function toggle(){
-    measurement = measurement === "°C" ? "°F" : "°C";
-    toggleTemp.innerHTML = measurement
-    renderWeather();
-    renderForecast();
-}
 
 function sortData(data){
     current = {
@@ -79,10 +72,6 @@ function sortData(data){
     renderForecast()
 }
 
-function editIconUrl(url){
-return url.replace("//cdn.weatherapi.com/weather/64x64/", "../src/icon/")
-
-}
 function renderWeather(){
     let currentObj = current;
     const condition = document.getElementById("condition")
@@ -138,4 +127,18 @@ function renderForecast(){
 function convertCF(num){
     let sum = (num * 9/5) + 32;
     return Math.round(sum * 10) / 10;
+}
+function editIconUrl(url){
+    return url.replace("//cdn.weatherapi.com/weather/64x64/", "../src/icon/")
+}
+
+const toggleTemp = document.getElementById("toggleTemp")
+toggleTemp.innerHTML = measurement;
+toggleTemp.addEventListener('click', toggle)
+
+function toggle(){
+    measurement = measurement === "°C" ? "°F" : "°C";
+    toggleTemp.innerHTML = measurement
+    renderWeather();
+    renderForecast();
 }
