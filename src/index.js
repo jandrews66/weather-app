@@ -129,7 +129,7 @@ function convertCF(num){
     return Math.round(sum * 10) / 10;
 }
 function editIconUrl(url){
-    return url.replace("//cdn.weatherapi.com/weather/64x64/", "../assets/icon/")
+    return url.replace("//cdn.weatherapi.com/weather/64x64/", "/assets/icon/")
 }
 
 const toggleTemp = document.getElementById("toggleTemp")
