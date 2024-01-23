@@ -85,7 +85,7 @@ function renderWeather(){
 
     const iconContainer = document.getElementById("conditionIcon")
     iconContainer.innerHTML = "";
-    const iconMarkup = `<img src=${editIconUrl(currentObj.icon_code)}>`
+    const iconMarkup = `<img src=https:${currentObj.icon_code}>`
     iconContainer.insertAdjacentHTML('beforeend', iconMarkup)
 
     const weatherObj = currentObj.weather
@@ -118,8 +118,10 @@ function renderForecast(){
         if (measurement == "°F"){
             num = convertCF(item.avgTemp)
         }
-        const markup = `<li><p>${item.date}</p><img src="${editIconUrl(item.icon_code)}"><p>${num}${measurement}</p><p>${item.condition}</p></li>`
+        const markup = `<li><p>${item.date}</p><img src=https:${item.icon_code}><p>${num}${measurement}</p><p>${item.condition}</p></li>`
+        console.log(item.icon_code)
         forecastList.insertAdjacentHTML('beforeend', markup);
+        
 
     }
 }
@@ -127,9 +129,6 @@ function renderForecast(){
 function convertCF(num){
     let sum = (num * 9/5) + 32;
     return Math.round(sum * 10) / 10;
-}
-function editIconUrl(url){
-    return url.replace("//cdn.weatherapi.com/weather/64x64/", "../assets/icon/")
 }
 
 const toggleTemp = document.getElementById("toggleTemp")
