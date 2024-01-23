@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", getWeather("vancouver"))
 
 async function getWeather(location){
     try {
-        const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=6c6dcb07e838483dad800431232211&q=${location}&days=3&aqi=no&alerts=no`, {mode: 'no-cors'})
+        const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=6c6dcb07e838483dad800431232211&q=${location}&days=3&aqi=no&alerts=no`)
         const data = await response.json();
         sortData(data);
     } catch(error) {
